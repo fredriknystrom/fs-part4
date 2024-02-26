@@ -78,6 +78,17 @@ test('url missing, send error 400', async () => {
   assert.strictEqual(response.body.error, 'title or url missing')
 })
 
+test.only('delete note based on id', async () => {
+  const deleteNode = multipleBlogs[0]
+  const id = deleteNode._id.toString()
+
+  await api.delete(`/api/blogs/${id}`).expect(204)
+
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.body.length, multipleBlogs.length - 1)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
