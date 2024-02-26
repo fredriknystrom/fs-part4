@@ -43,7 +43,7 @@ test('posting a new blog', async () => {
   assert.strictEqual(response.body.length, multipleBlogs.length+1)
 })
 
-test.only('missing likes property defaults to 0', async () => {
+test('missing likes property defaults to 0', async () => {
   const newBlog = {
     title: 'Likes Default 0',
     author: 'Test author',
@@ -54,8 +54,28 @@ test.only('missing likes property defaults to 0', async () => {
                             .send(newBlog)
                             .expect(201)
                             .expect('Content-Type', /application\/json/)
-                            
+
   assert.strictEqual(response.body.likes, 0)
+})
+
+test('title missing, send error 400', async () => {
+  const noTitleBlog = {
+    author: 'Test author',
+    url: 'default.com',
+  }
+
+  const response = await api.post('/api/blogs').send(noTitleBlog).expect(400)
+  assert.strictEqual(response.body.error, 'title or url missing')
+})
+
+test('url missing, send error 400', async () => {
+  const noUrlBlog = {
+    title: "Best title",
+    author: 'Test author',
+  }
+
+  const response = await api.post('/api/blogs').send(noUrlBlog).expect(400)
+  assert.strictEqual(response.body.error, 'title or url missing')
 })
 
 after(async () => {
