@@ -32,7 +32,7 @@ test('blog post unique identifier is named id', async () => {
   }
 })
 
-test.only('posting a new blog', async () => {
+test('posting a new blog', async () => {
   console.log("here")
   await api.post('/api/blogs')
     .send(newBlog)
@@ -41,7 +41,22 @@ test.only('posting a new blog', async () => {
 
   const response = await api.get('/api/blogs')
   assert.strictEqual(response.body.length, multipleBlogs.length+1)
-}) 
+})
+
+test.only('missing likes property defaults to 0', async () => {
+  const newBlog = {
+    title: 'Likes Default 0',
+    author: 'Test author',
+    url: 'default.com',
+  }
+
+  const response = await api.post('/api/blogs')
+                            .send(newBlog)
+                            .expect(201)
+                            .expect('Content-Type', /application\/json/)
+                            
+  assert.strictEqual(response.body.likes, 0)
+})
 
 after(async () => {
   await mongoose.connection.close()
